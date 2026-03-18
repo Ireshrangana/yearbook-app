@@ -82,7 +82,11 @@ cd yearbook-app
 
 ### 3. Configure Environment Variables
 
-Create a `backend/.env` file.
+Copy the example file and create a real local environment file:
+
+```bash
+cp backend/.env.example backend/.env
+```
 
 Example:
 
@@ -98,6 +102,7 @@ CLIENT_URL=http://127.0.0.1:3001
 Notes:
 
 - `backend/.env` is intentionally ignored and should never be committed.
+- `backend/.env.example` is safe to commit and documents the required keys.
 - If you prefer a different frontend port, update `CLIENT_URL` to match.
 
 ### 4. Install Dependencies
