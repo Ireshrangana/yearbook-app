@@ -9,6 +9,7 @@ frontend/.env
 **/.env
 **/.env.*
 !backend/.env.example
+!frontend/.env.example
 
 # Build files
 build/

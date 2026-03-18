@@ -7,6 +7,7 @@ This repository contains:
 - A Node.js + Express + MongoDB backend API
 - A React frontend powered by Vite
 - Local development setup for MongoDB, frontend, and backend services
+- Deployment-ready configuration for Vercel + Render
 
 ## Tech Stack
 
@@ -88,6 +89,12 @@ Copy the example file and create a real local environment file:
 cp backend/.env.example backend/.env
 ```
 
+For the frontend:
+
+```bash
+cp frontend/.env.example frontend/.env
+```
+
 Example:
 
 ```env
@@ -103,6 +110,7 @@ Notes:
 
 - `backend/.env` is intentionally ignored and should never be committed.
 - `backend/.env.example` is safe to commit and documents the required keys.
+- `frontend/.env.example` documents the frontend API URL configuration.
 - If you prefer a different frontend port, update `CLIENT_URL` to match.
 
 ### 4. Install Dependencies
@@ -119,6 +127,29 @@ Install frontend dependencies:
 ```bash
 cd ../frontend
 npm install
+```
+
+## Environment Variables
+
+### Backend
+
+Defined in `backend/.env`:
+
+```env
+NODE_ENV=development
+PORT=5001
+MONGO_URI=mongodb://127.0.0.1:27017/yearbook-app?authSource=admin
+JWT_SECRET=replace_with_a_secure_secret
+JWT_EXPIRE=30d
+CLIENT_URL=http://127.0.0.1:3001
+```
+
+### Frontend
+
+Defined in `frontend/.env`:
+
+```env
+VITE_API_BASE_URL=http://localhost:5001
 ```
 
 ## Running the App
@@ -185,6 +216,57 @@ or, if Vite switches ports:
 http://127.0.0.1:3001
 ```
 
+## Deployment
+
+This repository is prepared for:
+
+- Vercel for the frontend
+- Render for the backend
+
+### Deploy Backend to Render
+
+1. Create a new Web Service in Render from this GitHub repository.
+2. Set the root directory to `backend`.
+3. Render can also detect the included [`render.yaml`](render.yaml).
+4. Configure these environment variables in Render:
+
+```env
+NODE_ENV=production
+PORT=5001
+MONGO_URI=your_render_or_atlas_mongodb_uri
+JWT_SECRET=your_secure_jwt_secret
+JWT_EXPIRE=30d
+CLIENT_URL=https://your-frontend-domain.vercel.app
+```
+
+5. Deploy the service and copy the backend URL, for example:
+
+```text
+https://yearbook-app-backend.onrender.com
+```
+
+### Deploy Frontend to Vercel
+
+1. Import the repository into Vercel.
+2. Set the project root to `frontend`.
+3. Add the frontend environment variable:
+
+```env
+VITE_API_BASE_URL=https://your-render-backend.onrender.com
+```
+
+4. Deploy the frontend.
+
+The included [`frontend/vercel.json`](frontend/vercel.json) provides SPA rewrite support for React Router.
+
+### Final GitHub Homepage Setup
+
+After deployment, update the GitHub repository homepage to your live frontend URL, for example:
+
+```text
+https://your-project.vercel.app
+```
+
 ## API Overview
 
 ### Auth
@@ -230,7 +312,7 @@ Only PDF uploads are accepted by the current backend implementation.
 
 - The frontend uses Vite for local development
 - The backend defaults to Express on port `5001` in the current local setup
-- The frontend API base URL is configured to call `http://localhost:5001`
+- The frontend API base URL is controlled by `VITE_API_BASE_URL`
 - MongoDB must be running locally for registration, login, and yearbook routes to work
 
 ## Troubleshooting

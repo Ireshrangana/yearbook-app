@@ -1,7 +1,9 @@
 import axios from 'axios';
 
-// Set default baseURL for all axios requests
-axios.defaults.baseURL = 'http://localhost:5001';
+const apiBaseUrl =
+  import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001';
+
+axios.defaults.baseURL = apiBaseUrl;
 
 // Add a request interceptor to include the token in all requests
 axios.interceptors.request.use(

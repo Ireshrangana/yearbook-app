@@ -13,12 +13,22 @@ const yearbookRoutes = require('./routes/yearbook.routes');
 const app = express();
 const uploadsPath = path.join(__dirname, 'uploads');
 const port = process.env.PORT || 5000;
+const allowedOrigins = (process.env.CLIENT_URL || '')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
 
 fs.mkdirSync(uploadsPath, { recursive: true });
 
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || true,
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.length === 0 || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error(`CORS blocked for origin: ${origin}`));
+    },
     credentials: true
   })
 );
@@ -30,6 +40,13 @@ app.get('/api/health', (_req, res) => {
   res.json({
     status: 'ok',
     mongoReadyState: mongoose.connection.readyState
+  });
+});
+
+app.get('/', (_req, res) => {
+  res.json({
+    message: 'Yearbook App backend is running',
+    health: '/api/health'
   });
 });
 
@@ -62,6 +79,6 @@ const connectToDatabase = async () => {
 
 connectToDatabase().finally(() => {
   app.listen(port, () => {
-    console.log(`Backend listening on http://localhost:${port}`);
+    console.log(`Backend listening on port ${port}`);
   });
 });
